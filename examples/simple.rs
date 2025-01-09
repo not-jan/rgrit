@@ -1,9 +1,9 @@
-use grit_rs::GfxFormat;
+use rgrit::GfxFormat;
 
 fn main() {
-    let bitmap = grit_rs::BitmapBuilder::new("assets/test.png")
-        .with_transparency(grit_rs::Transparency::Disabled)
-        .with_bit_depth_override(grit_rs::BitDepth::Custom(16))
+    let bitmap = rgrit::BitmapBuilder::new("assets/test.png")
+        .with_transparency(rgrit::Transparency::Disabled)
+        .with_bit_depth_override(rgrit::BitDepth::Custom(16))
         .with_format(GfxFormat::Bitmap)
         .build()
         .unwrap();

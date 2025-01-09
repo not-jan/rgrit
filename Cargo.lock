@@ -76,42 +76,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8d1add55171497b4705a648c6b583acafb01d58050a51727785f0b2c8e0a2b2"
 
 [[package]]
-name = "grit"
-version = "0.1.0"
-dependencies = [
- "grit-proc",
- "grit-rs",
-]
-
-[[package]]
-name = "grit-proc"
-version = "0.1.0"
-dependencies = [
- "grit-rs",
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "grit-rs"
-version = "0.1.0"
-dependencies = [
- "grit-sys",
- "proc-macro2",
- "quote",
- "syn",
- "thiserror",
-]
-
-[[package]]
-name = "grit-sys"
-version = "0.1.0"
-dependencies = [
- "bindgen",
-]
-
-[[package]]
 name = "itertools"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -220,6 +184,46 @@ name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
+
+[[package]]
+name = "rgrit"
+version = "0.1.0"
+dependencies = [
+ "rgrit-core",
+ "rgrit-proc",
+ "rgrit-rs",
+]
+
+[[package]]
+name = "rgrit-core"
+version = "0.1.0"
+
+[[package]]
+name = "rgrit-proc"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "rgrit-core",
+ "rgrit-rs",
+ "syn",
+]
+
+[[package]]
+name = "rgrit-rs"
+version = "0.1.0"
+dependencies = [
+ "rgrit-core",
+ "rgrit-sys",
+ "thiserror",
+]
+
+[[package]]
+name = "rgrit-sys"
+version = "0.1.0"
+dependencies = [
+ "bindgen",
+]
 
 [[package]]
 name = "rustc-hash"

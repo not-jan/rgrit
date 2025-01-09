@@ -1,23 +1,17 @@
-use std::{
-    ffi::{CString, NulError},
-    fmt::Formatter,
-};
+use rgrit_core::*;
+use std::ffi::{CString, NulError};
 
-use grit_sys::EGritCompression_GRIT_CPRS_HEADER;
-use grit_sys::EGritCompression_GRIT_CPRS_RLE;
-use grit_sys::{
+use rgrit_sys::EGritCompression_GRIT_CPRS_HEADER;
+use rgrit_sys::EGritCompression_GRIT_CPRS_HUFF;
+use rgrit_sys::EGritCompression_GRIT_CPRS_LZ77;
+use rgrit_sys::EGritCompression_GRIT_CPRS_OFF;
+use rgrit_sys::EGritCompression_GRIT_CPRS_RLE;
+use rgrit_sys::{
     cldib_load, grit_alloc, grit_clear, grit_free, grit_init, grit_init_from_dib, grit_run,
     tagRGBQUAD, EGritGraphicsMode_GRIT_GFX_BMP_A, EGritGraphicsTextureFormat_GRIT_TEXFMT_4x4,
     EGritGraphicsTextureFormat_GRIT_TEXFMT_A3I5, EGritGraphicsTextureFormat_GRIT_TEXFMT_A5I3,
     RECORD,
 };
-
-use grit_sys::EGritCompression_GRIT_CPRS_HUFF;
-use grit_sys::EGritCompression_GRIT_CPRS_LZ77;
-use grit_sys::EGritCompression_GRIT_CPRS_OFF;
-use proc_macro2::TokenStream;
-use quote::TokenStreamExt;
-use quote::{quote, ToTokens};
 
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum Error {
@@ -32,135 +26,6 @@ pub enum Error {
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
-
-#[derive(Clone, Copy, Debug, Default)]
-pub enum GfxFormat {
-    #[default]
-    Bitmap,
-    Tile,
-}
-
-#[derive(Clone, Copy, Debug, Default)]
-pub enum Compression {
-    #[default]
-    Off,
-    LZ77,
-    Huffman,
-    RLE,
-    OffHeader,
-}
-
-#[derive(Clone, Copy, Debug)]
-pub enum Color {
-    RGB { r: u8, g: u8, b: u8 },
-    GBR16(u16),
-}
-
-#[derive(Clone, Copy, Debug)]
-pub enum Transparency {
-    Disabled,
-    Color(Color),
-}
-
-impl Default for Transparency {
-    fn default() -> Self {
-        Transparency::Color(Color::RGB {
-            r: 0xFF,
-            g: 0,
-            b: 0xFF,
-        })
-    }
-}
-
-#[derive(Clone, Copy, Debug)]
-pub enum BitDepth {
-    A3I5,
-    A5I3,
-    FourByFour,
-    Custom(u8),
-}
-
-impl ToTokens for BitDepth {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let token = match self {
-            BitDepth::A3I5 => quote! {
-                grit::BitDepth::A3I5
-            },
-            BitDepth::A5I3 => quote! {
-                grit::BitDepth::A5I3
-            },
-            BitDepth::FourByFour => quote! {
-                grit::BitDepth::FourByFour
-            },
-            BitDepth::Custom(n) => quote! {
-                grit::BitDepth::Custom(#n)
-            },
-        };
-
-        tokens.append_all(token);
-    }
-}
-
-impl ToTokens for Compression {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let token = match self {
-            Compression::Off => quote! {
-                grit::Compression::Off
-            },
-            Compression::LZ77 => quote! {
-                grit::Compression::LZ77
-            },
-            Compression::Huffman => quote! {
-                grit::Compression::Huffman
-            },
-            Compression::RLE => quote! {
-                grit::Compression::RLE
-            },
-            Compression::OffHeader => quote! {
-                grit::Compression::OffHeader
-            },
-        };
-
-        tokens.append_all(token);
-    }
-}
-
-impl ToTokens for GfxFormat {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let token = match self {
-            GfxFormat::Bitmap => quote! {
-                grit::GfxFormat::Bitmap
-            },
-            GfxFormat::Tile => quote! {
-                grit::GfxFormat::Tile
-            },
-        };
-
-        tokens.append_all(token);
-    }
-}
-
-impl ToTokens for Transparency {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        let token = match self {
-            Transparency::Disabled => quote! {
-                grit::Transparency::Disabled
-            },
-            Transparency::Color(Color::RGB { r, g, b }) => {
-                quote! {
-                    grit::Transparency::Color(grit::Color::RGB { r: #r, g: #g, b: #b })
-                }
-            }
-            Transparency::Color(Color::GBR16(clr)) => {
-                quote! {
-                    grit::Transparency::Color(grit::Color::GBR16(#clr))
-                }
-            }
-        };
-
-        tokens.append_all(token);
-    }
-}
 
 #[derive(Clone, Debug, Default)]
 pub struct BitmapBuilder {
@@ -182,13 +47,6 @@ pub struct BitmapBuilder {
     area_height: Option<i32>,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub struct BitmapSpec {
-    pub bit_depth: Option<BitDepth>,
-    pub format: GfxFormat,
-    pub transparency: Transparency,
-}
-
 #[derive(Clone, Debug)]
 pub struct Bitmap {
     pub gfx: Vec<u8>,
@@ -196,27 +54,6 @@ pub struct Bitmap {
     pub map: Vec<u8>,
     pub meta: Vec<u8>,
     pub spec: BitmapSpec,
-}
-
-#[derive(Clone)]
-pub struct StaticBitmap {
-    pub gfx: &'static [u8],
-    pub palette: &'static [u8],
-    pub map: &'static [u8],
-    pub meta: &'static [u8],
-    pub spec: BitmapSpec,
-}
-
-impl std::fmt::Debug for StaticBitmap {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StaticBitmap")
-            .field("gfx", &format_args!("[u8; {}]", self.gfx.len()))
-            .field("palette", &format_args!("[u8; {}]", self.palette.len()))
-            .field("map", &format_args!("[u8; {}]", self.map.len()))
-            .field("meta", &format_args!("[u8; {}]", self.meta.len()))
-            .field("spec", &self.spec)
-            .finish()
-    }
 }
 
 /// # Safety

@@ -1,6 +1,8 @@
-use grit_rs::Bitmap;
-use grit_rs::BitmapBuilder;
-use grit_rs::GfxFormat;
+use rgrit_core::Compression;
+use rgrit_core::GfxFormat;
+use rgrit_rs::Bitmap;
+use rgrit_rs::BitmapBuilder;
+
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::Ident;
@@ -18,8 +20,8 @@ impl Parse for Grit {
 
         if input.is_empty() {
             let bitmap = BitmapBuilder::new(lit.value())
-                .with_transparency(grit_rs::Transparency::Disabled)
-                .with_bit_depth_override(grit_rs::BitDepth::Custom(16))
+                .with_transparency(rgrit_core::Transparency::Disabled)
+                .with_bit_depth_override(rgrit_core::BitDepth::Custom(16))
                 .with_format(GfxFormat::Bitmap)
                 .build()
                 .map_err(|e| {
@@ -46,8 +48,8 @@ impl Parse for Grit {
                             let ident = input.parse::<Ident>()?;
                             match ident.to_string().as_str() {
                                 "Disabled" => {
-                                    builder =
-                                        builder.with_transparency(grit_rs::Transparency::Disabled)
+                                    builder = builder
+                                        .with_transparency(rgrit_core::Transparency::Disabled)
                                 }
                                 _ => {
                                     return Err(syn::Error::new(
@@ -71,15 +73,15 @@ impl Parse for Grit {
                             match ident.to_string().as_str() {
                                 "A3I5" => {
                                     builder =
-                                        builder.with_bit_depth_override(grit_rs::BitDepth::A3I5)
+                                        builder.with_bit_depth_override(rgrit_core::BitDepth::A3I5)
                                 }
                                 "A5I3" => {
                                     builder =
-                                        builder.with_bit_depth_override(grit_rs::BitDepth::A5I3)
+                                        builder.with_bit_depth_override(rgrit_core::BitDepth::A5I3)
                                 }
                                 "FourByFour" | "4x4" => {
                                     builder = builder
-                                        .with_bit_depth_override(grit_rs::BitDepth::FourByFour)
+                                        .with_bit_depth_override(rgrit_core::BitDepth::FourByFour)
                                 }
                                 _ => {
                                     return Err(syn::Error::new(ident.span(), "Unknown bit depth"))
@@ -87,9 +89,9 @@ impl Parse for Grit {
                             }
                         } else if input.peek(LitInt) {
                             let lit = input.parse::<LitInt>()?;
-                            builder = builder.with_bit_depth_override(grit_rs::BitDepth::Custom(
-                                lit.base10_parse()?,
-                            ));
+                            builder = builder.with_bit_depth_override(
+                                rgrit_core::BitDepth::Custom(lit.base10_parse()?),
+                            );
                         } else {
                             return Err(syn::Error::new(
                                 input.span(),
@@ -197,23 +199,37 @@ pub fn grit(input: TokenStream) -> TokenStream {
 
     // Also put some metadata so we can automatically display it.
     let bit_depth = match input.bitmap.spec.bit_depth {
-        Some(bit_depth) => quote! { Some(#bit_depth) },
+        Some(rgrit_core::BitDepth::A3I5) => quote! { Some(rgrit_core::BitDepth::A3I5) },
+        Some(rgrit_core::BitDepth::A5I3) => quote! { Some(rgrit_core::BitDepth::A5I3) },
+        Some(rgrit_core::BitDepth::FourByFour) => quote! { Some(rgrit_core::BitDepth::FourByFour) },
+        Some(rgrit_core::BitDepth::Custom(n)) => quote! { Some(rgrit_core::BitDepth::Custom(#n)) },
+
         None => quote! { None },
     };
-    let format = input.bitmap.spec.format;
-    let transparency = input.bitmap.spec.transparency;
+    let format = match input.bitmap.spec.format {
+        rgrit_core::GfxFormat::Bitmap => quote! { rgrit_core::GfxFormat::Bitmap },
+        rgrit_core::GfxFormat::Tile => quote! { rgrit_core::GfxFormat::Tile },
+    };
+    let transparency = match input.bitmap.spec.transparency {
+        rgrit_core::Transparency::Disabled => quote! { rgrit_core::Transparency::Disabled },
+        rgrit_core::Transparency::Color(rgrit_core::Color::RGB { r, g, b }) => {
+            quote! { grit_core::Transparency::Color(rgrit_core::Color::RGB { r: #r, g: #g, b: #b }) }
+        }
+        rgrit_core::Transparency::Color(rgrit_core::Color::GBR16(clr)) => {
+            quote! { grit_core::Transparency::Color(rgrit_core::Color::GBR16(#clr)) }
+        }
+    };
 
     quote! {
-        grit::StaticBitmap {
+        rgrit::StaticBitmap {
             gfx: &[#(#gfx),*],
             palette: &[#(#palette),*],
             map: &[#(#map),*],
             meta: &[#(#meta),*],
-            spec: grit::BitmapSpec {
+            spec: rgrit_core::BitmapSpec {
                 bit_depth: #bit_depth,
                 format: #format,
                 transparency: #transparency,
-
             },
         }
     }

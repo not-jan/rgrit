@@ -1,7 +1,6 @@
-use grit::StaticBitmap;
-use grit_proc::grit;
+use rgrit::StaticBitmap;
 
-const BACKGROUND: StaticBitmap = grit! {
+const BACKGROUND: StaticBitmap = rgrit::grit! {
     "assets/test.png",
     transparency = Disabled,
     bit_depth = 16,

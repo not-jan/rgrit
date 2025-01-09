@@ -1,18 +1,21 @@
 [package]
-name = "grit"
+name = "rgrit"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-grit-proc = { path = "grit-proc" }
-grit-rs = { path = "grit-rs" }
-
+rgrit-proc = { path = "rgrit-proc", optional = true }
+rgrit-rs = { path = "rgrit-rs", optional = true }
+rgrit-core = { path = "rgrit-core" }
 
 [workspace]
-members = ["grit-proc", "grit-rs", "grit-sys"]
-
+members = ["rgrit-core", "rgrit-proc", "rgrit-rs", "rgrit-sys"]
 
 [workspace.dependencies]
-proc-macro2 = "1.0.92"
-quote = "1.0.38"
-syn = { version = "2.0.95", features = ["full"] }
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }
+
+[features]
+default = ["std"]
+std = ["dep:rgrit-proc", "dep:rgrit-rs"]

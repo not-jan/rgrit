@@ -43,6 +43,18 @@ fn main() {
         .output()
         .expect("Failed to run git. Is it installed?");
 
+    let envs = if cfg!(target_os = "macos") {
+        let ldflags = env::var("LDFLAGS").unwrap_or_default();
+        let cppflags = env::var("CPPFLAGS").unwrap_or_default();
+
+        vec![
+            ("LDFLAGS", ldflags + " -L/opt/homebrew/lib"),
+            ("CPPFLAGS", cppflags + " -I/opt/homebrew/include"),
+        ]
+    } else {
+        vec![]
+    };
+
     if !is_patched.status.success()
         && !Command::new("git")
             .arg("apply")
@@ -68,6 +80,7 @@ fn main() {
 
     if !Command::new("./configure")
         .current_dir(&grit_path)
+        .envs(envs)
         .output()
         .expect("Failed to run configure.")
         .status

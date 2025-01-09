@@ -1,0 +1,9 @@
+[package]
+name = "rgrit-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rgrit-sys = { path = "../rgrit-sys" }
+rgrit-core = { path = "../rgrit-core" }
+thiserror = "2.0.9"

@@ -1,2 +1,6 @@
-pub use grit_proc::grit;
-pub use grit_rs::*;
+#[cfg(feature = "std")]
+pub use rgrit_proc::grit;
+#[cfg(feature = "std")]
+pub use rgrit_rs::*;
+
+pub use rgrit_core::*;

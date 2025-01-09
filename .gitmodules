@@ -1,3 +1,3 @@
-[submodule "grit-sys/grit"]
-	path = grit-sys/grit
+[submodule "rgrit-sys/grit"]
+	path = rgrit-sys/grit
 	url = git@github.com:devkitPro/grit.git
