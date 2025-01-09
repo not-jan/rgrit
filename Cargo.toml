@@ -1,0 +1,18 @@
+[package]
+name = "grit"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+grit-proc = { path = "grit-proc" }
+grit-rs = { path = "grit-rs" }
+
+
+[workspace]
+members = ["grit-proc", "grit-rs", "grit-sys"]
+
+
+[workspace.dependencies]
+proc-macro2 = "1.0.92"
+quote = "1.0.38"
+syn = { version = "2.0.95", features = ["full"] }
