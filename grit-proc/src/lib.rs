@@ -124,6 +124,49 @@ impl Parse for Grit {
                         let lit = input.parse::<LitInt>()?;
                         builder = builder.with_meta_height(lit.base10_parse()?);
                     }
+                    "area_left" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_left(lit.base10_parse()?);
+                    }
+                    "area_right" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_right(lit.base10_parse()?);
+                    }
+                    "area_width" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_width(lit.base10_parse()?);
+                    }
+                    "area_top" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_top(lit.base10_parse()?);
+                    }
+                    "area_bottom" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_bottom(lit.base10_parse()?);
+                    }
+                    "area_height" => {
+                        let lit = input.parse::<LitInt>()?;
+                        builder = builder.with_area_height(lit.base10_parse()?);
+                    }
+                    "compression" => {
+                        let compression_ident = input.parse::<Ident>()?;
+
+                        match compression_ident.to_string().as_str() {
+                            "Off" => builder = builder.with_compression(Compression::Off),
+                            "LZ77" => builder = builder.with_compression(Compression::LZ77),
+                            "Huffman" => builder = builder.with_compression(Compression::Huffman),
+                            "RLE" => builder = builder.with_compression(Compression::RLE),
+                            "OffHeader" => {
+                                builder = builder.with_compression(Compression::OffHeader)
+                            }
+                            _ => {
+                                return Err(syn::Error::new(
+                                    compression_ident.span(),
+                                    "Unknown compression",
+                                ))
+                            }
+                        }
+                    }
                     _ => return Err(syn::Error::new(ident.span(), "Unknown attribute")),
                 };
 
