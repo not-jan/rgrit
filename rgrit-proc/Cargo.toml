@@ -14,7 +14,7 @@ categories = ["game-development", "graphics", "multimedia::images"]
 syn.workspace = true
 quote.workspace = true
 proc-macro2.workspace = true
-rgrit-rs = { path = "../rgrit-rs" }
+rgrit-rs = { path = "../rgrit-rs", version = "0.1.0" }
 rgrit-core = { path = "../rgrit-core", version = "0.1.0" }
 
 [lib]
