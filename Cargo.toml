@@ -2,11 +2,17 @@
 name = "rgrit"
 version = "0.1.0"
 edition = "2021"
+description = "A Rust interface to grit - the GBA Image Transmogrifier with batteries included!"
+homepage = "https://github.com/not-jan/rgrit"
+repository = "https://github.com/not-jan/rgrit"
+license = "MIT"
+keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
+categories = ["game-development", "graphics", "multimedia::images"]
 
 [dependencies]
 rgrit-proc = { path = "rgrit-proc", optional = true }
 rgrit-rs = { path = "rgrit-rs", optional = true }
-rgrit-core = { path = "rgrit-core" }
+rgrit-core = { path = "rgrit-core", version = "0.1.0" }
 
 [workspace]
 members = ["rgrit-core", "rgrit-proc", "rgrit-rs", "rgrit-sys"]

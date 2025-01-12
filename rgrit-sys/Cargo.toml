@@ -2,6 +2,12 @@
 name = "rgrit-sys"
 version = "0.1.0"
 edition = "2021"
+description = "Native bindings for libgrit (grit) and libcldib (cldib)"
+homepage = "https://github.com/not-jan/rgrit/tree/master/rgrit-sys"
+repository = "https://github.com/not-jan/rgrit"
+license = "MIT"
+keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
+categories = ["game-development", "graphics", "multimedia::images"]
 
 [dependencies]
 
