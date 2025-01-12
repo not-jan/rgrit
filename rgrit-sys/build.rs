@@ -22,12 +22,14 @@ fn main() {
             .ldflag("-L/opt/homebrew/lib")
             .cxxflag("-std=c++14")
             .cxxflag("-I/opt/homebrew/include")
+            .reconf("-i")
             .enable_static()
             .build()
     } else {
         autotools::Config::new(&grit_path)
             .cxxflag("-std=c++14")
             .enable_static()
+            .reconf("-i")
             .build()
     };
 
