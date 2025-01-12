@@ -19,17 +19,17 @@ fn main() {
         //   a) if there's a better way to do this and
         //   b) how to make this work with e.g. macports
         autotools::Config::new(&grit_path)
+            .reconf("-i")
             .ldflag("-L/opt/homebrew/lib")
             .cxxflag("-std=c++14")
             .cxxflag("-I/opt/homebrew/include")
-            .reconf("-i")
             .enable_static()
             .build()
     } else {
         autotools::Config::new(&grit_path)
+            .reconf("-i")
             .cxxflag("-std=c++14")
             .enable_static()
-            .reconf("-i")
             .build()
     };
 
