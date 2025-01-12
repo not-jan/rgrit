@@ -1,6 +1,6 @@
 [package]
 name = "rgrit-sys"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Native bindings for libgrit (grit) and libcldib (cldib)"
 homepage = "https://github.com/not-jan/rgrit/tree/master/rgrit-sys"
@@ -14,3 +14,4 @@ categories = ["game-development", "graphics", "multimedia::images"]
 [build-dependencies]
 bindgen = "0.71.0"
 autotools = "0.2"
+dircpy = "0.3.19"

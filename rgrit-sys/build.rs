@@ -1,3 +1,4 @@
+use dircpy::copy_dir;
 use std::env;
 use std::path::PathBuf;
 
@@ -5,9 +6,15 @@ fn main() {
     println!("cargo:rerun-if-changed=wrapper.hpp");
     println!("cargo:rerun-if-changed=build.rs");
 
+    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
+    let grit_out_path = out_path.join("grit");
+
     let grit_path = PathBuf::from("grit")
         .canonicalize()
         .expect("cannot canonicalize path");
+
+    copy_dir(&grit_path, &grit_out_path).expect("failed to copy grit to OUT_DIR!");
 
     println!("cargo:rustc-link-search=native=/opt/homebrew/lib");
 
@@ -18,7 +25,7 @@ fn main() {
         // TODO: Figure out
         //   a) if there's a better way to do this and
         //   b) how to make this work with e.g. macports
-        autotools::Config::new(&grit_path)
+        autotools::Config::new(&grit_out_path)
             .reconf("-i")
             .ldflag("-L/opt/homebrew/lib")
             .cxxflag("-std=c++14")
@@ -26,7 +33,7 @@ fn main() {
             .enable_static()
             .build()
     } else {
-        autotools::Config::new(&grit_path)
+        autotools::Config::new(&grit_out_path)
             .reconf("-i")
             .cxxflag("-std=c++14")
             .enable_static()
@@ -77,7 +84,7 @@ fn main() {
         .expect("Unable to generate bindings");
 
     // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+
     bindings
         .write_to_file(out_path.join("bindings.rs"))
         .expect("Couldn't write bindings!");
