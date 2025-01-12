@@ -1,4 +1,4 @@
 
 [submodule "rgrit-sys/grit"]
 	path = rgrit-sys/grit
-	url = https://github.com/not-jan/rgrit.git
+	url = https://github.com/not-jan/grit.git
