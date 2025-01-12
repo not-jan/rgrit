@@ -25,7 +25,7 @@ pub enum Error {
     ConversionError(String),
 }
 
-pub type Result<T, E = Error> = core::result::Result<T, E>;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Clone, Debug, Default)]
 pub struct BitmapBuilder {
@@ -168,8 +168,8 @@ impl BitmapBuilder {
 
         let gr = unsafe { &mut (*gr) };
 
-        gr.srcPath = src.as_ptr() as *mut i8;
-        let dib = unsafe { cldib_load(gr.srcPath, core::ptr::null_mut()) };
+        gr.srcPath = src.as_ptr() as *mut std::ffi::c_char;
+        let dib = unsafe { cldib_load(gr.srcPath, std::ptr::null_mut()) };
 
         if dib.is_null() {
             return Err(Error::InputNotFound(self.input.clone()));
@@ -286,7 +286,7 @@ impl BitmapBuilder {
             gr.mapCompression = value;
         }
 
-        let mut symbol_name = unsafe { core::mem::zeroed::<[i8; 256]>() };
+        let mut symbol_name = unsafe { std::mem::zeroed::<[std::ffi::c_char; 256]>() };
         gr.bExport = false;
         gr.symName = symbol_name.as_mut_ptr();
 
@@ -301,9 +301,9 @@ impl BitmapBuilder {
 
         // [`grit_free`] frees the memory allocated by [`grit_alloc`] and a bunch of nested pointers
         // If we set those pointers to null, free() will not do anything
-        gr.srcDib = core::ptr::null_mut();
-        gr.srcPath = core::ptr::null_mut();
-        gr.symName = core::ptr::null_mut();
+        gr.srcDib = std::ptr::null_mut();
+        gr.srcPath = std::ptr::null_mut();
+        gr.symName = std::ptr::null_mut();
 
         unsafe { grit_free(gr as *mut _) };
 
