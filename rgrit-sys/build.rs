@@ -9,6 +9,8 @@ fn main() {
         .canonicalize()
         .expect("cannot canonicalize path");
 
+    println!("cargo:rustc-link-search=native=/opt/homebrew/lib");
+
     // Build grit in the path `grit` and install it in `$OUT_DIR`
     let dst = if cfg!(target_os = "macos") {
         // Autotools doesn't pick up installed libraries on macOS automatically so we need to
@@ -33,10 +35,16 @@ fn main() {
         "cargo:rustc-link-search=native={}",
         dst.join("lib").display()
     );
-    println!("cargo:rustc-link-lib=static=grit");
 
-    println!("cargo:rustc-link-lib=grit");
-    println!("cargo:rustc-link-lib=cldib");
+    if cfg!(target_os = "macos") {
+        println!("cargo:rustc-link-search=/opt/homebrew/lib");
+        println!("cargo:rustc-link-lib=c++");
+    } else {
+        println!("cargo:rustc-link-lib=stdc++");
+    }
+
+    println!("cargo:rustc-link-lib=static=grit");
+    println!("cargo:rustc-link-lib=static=cldib");
 
     println!("cargo:rustc-link-lib=freeimage");
 
