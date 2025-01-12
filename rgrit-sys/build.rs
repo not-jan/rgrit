@@ -1,6 +1,5 @@
 use std::env;
 use std::path::PathBuf;
-use std::process::Command;
 
 fn main() {
     println!("cargo:rerun-if-changed=wrapper.hpp");
@@ -10,104 +9,31 @@ fn main() {
         .canonicalize()
         .expect("cannot canonicalize path");
 
-    let libdir_path = grit_path.join(".libs");
-
-    if !Command::new("git")
-        .arg("submodule")
-        .arg("init")
-        .output()
-        .expect("Failed to run git. Is it installed?")
-        .status
-        .success()
-    {
-        panic!("Failed to run git. Is it installed?");
-    }
-
-    if !Command::new("git")
-        .arg("submodule")
-        .arg("update")
-        .output()
-        .expect("Failed to run git. Is it installed?")
-        .status
-        .success()
-    {
-        panic!("Failed to run git. Is it installed?");
-    }
-
-    let is_patched = Command::new("git")
-        .arg("apply")
-        .arg("--reverse")
-        .arg("--check")
-        .arg("../grit.patch")
-        .current_dir(&grit_path)
-        .output()
-        .expect("Failed to run git. Is it installed?");
-
-    let envs = if cfg!(target_os = "macos") {
-        let ldflags = env::var("LDFLAGS").unwrap_or_default();
-        let cppflags = env::var("CPPFLAGS").unwrap_or_default();
-
-        vec![
-            ("LDFLAGS", ldflags + " -L/opt/homebrew/lib"),
-            ("CPPFLAGS", cppflags + " -I/opt/homebrew/include"),
-        ]
+    // Build grit in the path `grit` and install it in `$OUT_DIR`
+    let dst = if cfg!(target_os = "macos") {
+        // Autotools doesn't pick up installed libraries on macOS automatically so we need to
+        // manually add the include and library paths for brew
+        // TODO: Figure out
+        //   a) if there's a better way to do this and
+        //   b) how to make this work with e.g. macports
+        autotools::Config::new(&grit_path)
+            .ldflag("-L/opt/homebrew/lib")
+            .cxxflag("-std=c++14")
+            .cxxflag("-I/opt/homebrew/include")
+            .enable_static()
+            .build()
     } else {
-        vec![]
+        autotools::Config::new(&grit_path)
+            .cxxflag("-std=c++14")
+            .enable_static()
+            .build()
     };
 
-    if !is_patched.status.success()
-        && !Command::new("git")
-            .arg("apply")
-            .arg("../grit.patch")
-            .current_dir(&grit_path)
-            .output()
-            .expect("Failed to run git. Is it installed?")
-            .status
-            .success()
-    {
-        panic!("Failed to apply grit patch");
-    }
-
-    if !Command::new("./autogen.sh")
-        .current_dir(&grit_path)
-        .output()
-        .expect("Failed to run autoreconf. Is it installed?")
-        .status
-        .success()
-    {
-        panic!("Failed to run autoreconf. Is it installed?");
-    }
-
-    if !Command::new("./configure")
-        .current_dir(&grit_path)
-        .envs(envs)
-        .output()
-        .expect("Failed to run configure.")
-        .status
-        .success()
-    {
-        panic!("Failed to run configure.");
-    }
-
-    if !Command::new("make")
-        .current_dir(&grit_path)
-        .output()
-        .expect("Failed to run make. Is it installed?")
-        .status
-        .success()
-    {
-        panic!("Failed to build grit");
-    }
-
-    // Tell cargo to look for shared libraries in the specified directory
-    println!("cargo:rustc-link-search={}", libdir_path.to_str().unwrap());
-
-    if cfg!(target_os = "macos") {
-        println!("cargo:rustc-link-search=/opt/homebrew/lib");
-        println!("cargo:rustc-link-lib=c++");
-    } else {
-        println!("cargo:rustc-link-lib=stdc++");
-    }
+    println!(
+        "cargo:rustc-link-search=native={}",
+        dst.join("lib").display()
+    );
+    println!("cargo:rustc-link-lib=static=grit");
 
     println!("cargo:rustc-link-lib=grit");
     println!("cargo:rustc-link-lib=cldib");
