@@ -1,5 +1,11 @@
 # rgrit - Rust bindings for grit
 
+[![Crates.io Version](https://img.shields.io/crates/v/rgrit-rs)](https://crates.io/crates/rgrit)
+[![docs.rs](https://img.shields.io/docsrs/rgrit)](https://docs.rs/rgrit)
+[![Crates.io License](https://img.shields.io/crates/l/rgrit)](https://crates.io/crates/rgrit)
+
+
+
 This crate provides a Rust interface to [grit](https://github.com/devkitPro/grit) - the GBA Image Transmogrifier (“grit” for short).
 It is a bitmap conversion tool for GBA/NDS development.
 

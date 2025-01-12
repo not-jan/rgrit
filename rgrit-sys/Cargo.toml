@@ -8,6 +8,7 @@ repository = "https://github.com/not-jan/rgrit"
 license = "MIT"
 keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
 categories = ["game-development", "graphics", "multimedia::images"]
+documentation = "https://docs.rs/rgrit-sys"
 
 [dependencies]
 

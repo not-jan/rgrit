@@ -1,6 +1,6 @@
 [package]
 name = "rgrit-proc"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Proc macros for the rgrit crate"
 homepage = "https://github.com/not-jan/rgrit/tree/master/rgrit-proc"
@@ -8,14 +8,15 @@ repository = "https://github.com/not-jan/rgrit"
 license = "MIT"
 keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
 categories = ["game-development", "graphics", "multimedia::images"]
+documentation = "https://docs.rs/rgrit-proc"
 
 
 [dependencies]
 syn.workspace = true
 quote.workspace = true
 proc-macro2.workspace = true
-rgrit-rs = { path = "../rgrit-rs", version = "0.1.0" }
-rgrit-core = { path = "../rgrit-core", version = "0.1.0" }
+rgrit-rs = { path = "../rgrit-rs", version = "0.1.1" }
+rgrit-core = { path = "../rgrit-core", version = "0.1.1" }
 
 [lib]
 proc-macro = true
