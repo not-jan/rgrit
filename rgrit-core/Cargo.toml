@@ -6,7 +6,7 @@ description = "Core types for the rgrit crate"
 homepage = "https://github.com/not-jan/rgrit/tree/master/rgrit-core"
 repository = "https://github.com/not-jan/rgrit"
 license = "MIT"
-keywords = ["gba", "nds", "grit", "bitmap", "graphics", "homebrew", "nintendo"]
+keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
 categories = ["game-development", "graphics", "multimedia::images"]
 
 [dependencies]
