@@ -10,6 +10,6 @@ keywords = ["nds", "grit", "bitmap", "homebrew", "nintendo"]
 categories = ["game-development", "graphics", "multimedia::images"]
 
 [dependencies]
-rgrit-sys = { path = "../rgrit-sys" }
+rgrit-sys = { path = "../rgrit-sys", version = "0.1.0" }
 rgrit-core = { path = "../rgrit-core", version = "0.1.0" }
 thiserror = "2.0.9"
