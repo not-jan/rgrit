@@ -1,6 +1,6 @@
 [package]
 name = "rgrit"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A Rust interface to grit - the GBA Image Transmogrifier with batteries included!"
 homepage = "https://github.com/not-jan/rgrit"
@@ -11,9 +11,9 @@ categories = ["game-development", "graphics", "multimedia::images"]
 documentation = "https://docs.rs/rgrit"
 
 [dependencies]
-rgrit-proc = { path = "rgrit-proc", optional = true }
-rgrit-rs = { path = "rgrit-rs", optional = true }
-rgrit-core = { path = "rgrit-core", version = "0.1.0" }
+rgrit-proc = { path = "rgrit-proc", optional = true, version = "0.1.1" }
+rgrit-rs = { path = "rgrit-rs", optional = true, version = "0.1.1" }
+rgrit-core = { path = "rgrit-core", version = "0.1.1" }
 
 [workspace]
 members = ["rgrit-core", "rgrit-proc", "rgrit-rs", "rgrit-sys"]
