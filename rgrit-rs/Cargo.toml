@@ -1,6 +1,6 @@
 [package]
 name = "rgrit-rs"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Somewhat safe bindings for libgrit (grit) and libcldib (cldib)"
 homepage = "https://github.com/not-jan/rgrit/tree/master/rgrit-rs"
@@ -11,6 +11,6 @@ categories = ["game-development", "graphics", "multimedia::images"]
 documentation = "https://docs.rs/rgrit-rs"
 
 [dependencies]
-rgrit-sys = { path = "../rgrit-sys", version = "0.1.1" }
+rgrit-sys = { path = "../rgrit-sys", version = "0.1.2" }
 rgrit-core = { path = "../rgrit-core", version = "0.1.1" }
 thiserror = "2.0.9"
